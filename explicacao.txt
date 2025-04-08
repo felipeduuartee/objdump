@@ -19,7 +19,7 @@ de /usr/sbin na máquina atual.
 
 O script:
 - Detecta automaticamente a distro (ex: ubuntu-22.04)
-- Gera lista de ELFs válidos: lista_elfs_<distro>.txt
+- Gera lista de ELFs válidos: listas/lista_elfs_<distro>.txt
 - Cria pastas: dumps/<distro>/text/ e dumps/<distro>/full/
 - Gera disassemblies:
     - text: objdump -d (só seção .text)
@@ -45,8 +45,8 @@ Exemplo de uso:
     python3 preprocessar_ngrama.py --distro ubuntu-22.04 --modo text --n 2
 
 Saída:
-    corpus_<distro>_<modo>_n<n>.txt
-    (ex: corpus_ubuntu-22.04_text_n2.txt)
+    corpus/corpus_<distro>_<modo>_n<n>.txt
+    (ex: corpus/corpus_ubuntu-22.04_text_n2.txt)
 
 ---------------------------------------------------
 
@@ -65,8 +65,8 @@ Exemplo:
     python3 treinar_cbow.py --distro ubuntu-22.04 --modo text --n 2
 
 Saída:
-    modelo_cbow_<distro>_<modo>_n<n>.model
-    (ex: modelo_cbow_ubuntu-22.04_text_n2.model)
+    models/modelo_cbow_<distro>_<modo>_n<n>.model
+    (ex: models/modelo_cbow_ubuntu-22.04_text_n2.model)
 
 ---------------------------------------------------
 
@@ -147,4 +147,3 @@ OBJETIVO GERAL DO EXPERIMENTO
 ✔️ Possivelmente clusterizar binários também no futuro (etapa final)
 
 ---------------------------------------------------
-
