@@ -13,7 +13,7 @@ chmod +x extrair_disassembly.sh
 ```
 
 - Detecta automaticamente a distro
-- Cria dumps em: `dumps/<distro>/text/` e `dumps/<distro>/full/`
+- Cria dumps em: `dumps/<distro>/text/` (-d) e `dumps/<distro>/full/` (-D)
 - Lista de binários salva em: `listas/lista_elfs_<distro>.txt`
 
 ---
