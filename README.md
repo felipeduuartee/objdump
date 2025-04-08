@@ -22,7 +22,7 @@ chmod +x extrair_disassembly.sh
 ```bash
 python3 preprocessar_ngrama.py --distro <distro> --modo <text|full> --n <tamanho>
 ```
-- Ex: `--n 2` para bigramas
+- Ex: `--distro ubuntu-20.04` `--modo text` `--n 2` para bigramas
 - Gera `corpus/corpus_<distro>_<modo>_n<n>.txt`
 
 ---
