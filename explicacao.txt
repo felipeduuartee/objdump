@@ -1,0 +1,150 @@
+EXPERIMENTO CBOW + DISASSEMBLY – GUIA COMPLETO
+===============================================
+
+Este projeto aplica processamento de linguagem natural (CBOW) sobre disassembly
+de binários ELF do Linux extraídos com objdump. A ideia central é capturar a
+semântica de instruções assembly por meio de embeddings e usá-los para análise,
+visualização e detecção de comportamentos anômalos (ex: binários trojanizados).
+
+---------------------------------------------------
+ETAPAS DO EXPERIMENTO
+---------------------------------------------------
+
+1. EXTRAÇÃO DOS DUMPS (DISASSEMBLY)
+-----------------------------------
+Script: extrair_disassembly.sh
+
+Objetivo: extrair dois tipos de disassembly (`-d` e `-D`) dos binários ELF
+de /usr/sbin na máquina atual.
+
+O script:
+- Detecta automaticamente a distro (ex: ubuntu-22.04)
+- Gera lista de ELFs válidos: lista_elfs_<distro>.txt
+- Cria pastas: dumps/<distro>/text/ e dumps/<distro>/full/
+- Gera disassemblies:
+    - text: objdump -d (só seção .text)
+    - full: objdump -D (todas as seções)
+
+Execução:
+    ./extrair_disassembly.sh
+
+---------------------------------------------------
+
+2. GERAÇÃO DE N-GRAMAS
+-----------------------
+Script: preprocessar_ngrama.py
+
+Objetivo: processar os arquivos .asm e gerar n-gramas de instruções para treino.
+
+Parâmetros:
+    --distro  → nome da distro detectada (ex: ubuntu-22.04)
+    --modo    → text ou full (define qual pasta de disassembly usar)
+    --n       → tamanho do n-grama (ex: 2 = bigrama, 3 = trigrama)
+
+Exemplo de uso:
+    python3 preprocessar_ngrama.py --distro ubuntu-22.04 --modo text --n 2
+
+Saída:
+    corpus_<distro>_<modo>_n<n>.txt
+    (ex: corpus_ubuntu-22.04_text_n2.txt)
+
+---------------------------------------------------
+
+3. TREINO DO MODELO CBOW
+-------------------------
+Script: treinar_cbow.py
+
+Objetivo: treinar um modelo Word2Vec (CBOW) com base nos n-gramas extraídos.
+
+Parâmetros:
+    --distro  → nome da distro usada
+    --modo    → text ou full
+    --n       → tamanho do n-grama usado no corpus
+
+Exemplo:
+    python3 treinar_cbow.py --distro ubuntu-22.04 --modo text --n 2
+
+Saída:
+    modelo_cbow_<distro>_<modo>_n<n>.model
+    (ex: modelo_cbow_ubuntu-22.04_text_n2.model)
+
+---------------------------------------------------
+
+4. VISUALIZAÇÃO DOS EMBEDDINGS
+-------------------------------
+Script: view_embeddings.py
+
+Objetivo: reduzir os vetores a 2D (com PCA ou t-SNE) e visualizar como as
+instruções estão agrupadas no espaço vetorial.
+
+Parâmetros:
+    --distro   → nome da distro usada
+    --modo     → text ou full
+    --n        → tamanho do n-grama usado
+    --metodo   → tsne ou pca (default: tsne)
+
+Exemplo:
+    python3 view_embeddings.py --distro ubuntu-22.04 --modo full --n 2 --metodo tsne
+
+---------------------------------------------------
+
+5. CLUSTERIZAÇÃO DOS EMBEDDINGS
+--------------------------------
+Script: cluster.py
+
+Objetivo: aplicar K-Means para agrupar as instruções com base nos seus vetores.
+
+Parâmetros:
+    --distro     → nome da distro usada
+    --modo       → text ou full
+    --n          → n-grama usado
+    --clusters   → número de clusters (default: 10)
+    --plot       → (opcional) mostra gráfico 2D dos clusters
+    --metodo     → (opcional) tsne ou pca para visualização (default: tsne)
+
+Exemplo (somente texto):
+    python3 cluster.py --distro debian-12 --modo text --n 2 --clusters 12
+
+Exemplo (com visualização gráfica):
+    python3 cluster.py --distro ubuntu-22.04 --modo text --n 2 --plot
+
+---------------------------------------------------
+
+6. CONSULTA DE INSTRUÇÕES SIMILARES
+-----------------------------------
+Script: similares.py
+
+Objetivo: consultar instruções semanticamente próximas no embedding treinado.
+
+Parâmetros:
+    --distro      → nome da distro usada
+    --modo        → text ou full
+    --n           → n-grama usado
+    --instrucao   → mnemônico a consultar (ex: mov, push, lea)
+
+Exemplo:
+    python3 similares.py --distro fedora-38 --modo text --n 2 --instrucao mov
+
+---------------------------------------------------
+
+EXEMPLO DE FLUXO COMPLETO (em uma distro qualquer)
+---------------------------------------------------
+1. ./extrair_disassembly.sh
+2. python3 preprocessar_ngrama.py --distro ubuntu-22.04 --modo text --n 2
+3. python3 treinar_cbow.py --distro ubuntu-22.04 --modo text --n 2
+4. python3 view_embeddings.py --distro ubuntu-22.04 --modo text --n 2
+5. python3 cluster.py --distro ubuntu-22.04 --modo text --n 2 --plot
+6. python3 similares.py --distro ubuntu-22.04 --modo text --n 2 --instrucao mov
+
+---------------------------------------------------
+
+OBJETIVO GERAL DO EXPERIMENTO
+------------------------------
+✔️ Observar se o modelo CBOW agrupa instruções similares, mesmo em distros diferentes  
+✔️ Comparar `text` vs `full` (`-d` vs `-D`)  
+✔️ Detectar se binários modificados (trojanizados) geram vetores anômalos  
+✔️ Visualizar essas relações via t-SNE ou PCA  
+✔️ Possivelmente clusterizar binários também no futuro (etapa final)
+
+---------------------------------------------------
+
