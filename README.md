@@ -1,7 +1,7 @@
 # CBOW + Objdump Disassembly
 
 
-#### QUALQUER DÚVIDA QUE TIVER, CONSULTE O ARQUIVO `explicacao.txt` TEM TUDO LÁ
+### QUALQUER DÚVIDA QUE TIVER, CONSULTE O ARQUIVO `explicacao.txt` TEM TUDO LÁ
 
 Este projeto utiliza Word2Vec (CBOW) para gerar embeddings de instruções assembly extraídas de binários ELF usando `objdump`.
 
