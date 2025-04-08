@@ -8,6 +8,7 @@ Este projeto utiliza Word2Vec (CBOW) para gerar embeddings de instruções assem
 
 ### 1. Extrair disassembly dos binários ELF
 ```bash
+chmod +x extrair_disassembly.sh
 ./extrair_disassembly.sh
 ```
 
